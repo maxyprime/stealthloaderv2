@@ -74,11 +74,12 @@ if exist "%TEMP_EXE%" (
 pause
 goto STEALTH_MENU
 
-
 :RUN
 cls
-echo [*] Preparing disguised EXE...
+echo [*] Preparing to run EXE...
+
 set "DISGUISED_EXE=%temp%\user_data_blob.dat"
+set "RUNTIME_EXE=%temp%\runner_exec.exe"
 
 if not exist "%temp%\CAXVN.exe" (
     echo [✖] EXE not found. Please run Setup first.
@@ -86,27 +87,23 @@ if not exist "%temp%\CAXVN.exe" (
     goto STEALTH_MENU
 )
 
-:: Copy to disguised name
+:: Copy and disguise the EXE
 copy /Y "%temp%\CAXVN.exe" "%DISGUISED_EXE%" >nul 2>&1
 
-echo [*] Running EXE using PowerShell...
+:: Now convert .dat back to .exe to actually run
+copy /Y "%DISGUISED_EXE%" "%RUNTIME_EXE%" >nul 2>&1
+
+echo [*] Running disguised EXE silently...
 powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ^
- "Start-Process -FilePath '%DISGUISED_EXE%' -WindowStyle Hidden"
+ "Start-Process -FilePath '%RUNTIME_EXE%' -WindowStyle Hidden -Wait"
 
-echo [*] Waiting for EXE to finish...
-
-:WAIT_LOOP
-timeout /t 2 >nul
-tasklist /FI "IMAGENAME eq user_data_blob.dat" | find /I "user_data_blob.dat" >nul
-if not errorlevel 1 (
-    goto WAIT_LOOP
-)
-
-echo [✓] EXE has exited. Cleaning up...
+echo [✓] EXE finished. Cleaning up...
+del /f /q "%RUNTIME_EXE%" >nul 2>&1
 del /f /q "%DISGUISED_EXE%" >nul 2>&1
 echo [✓] Cleanup complete.
 pause
 goto STEALTH_MENU
+
 
 
 
